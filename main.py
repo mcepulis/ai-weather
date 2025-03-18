@@ -18,18 +18,17 @@ client = OpenAI(
 )
 
 def get_coordinates(city_name):
-    """Fetch latitude and longitude for a city using OpenWeatherMap Geocoding API."""
     geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=1&appid={OPENWEATHER_API_KEY}"
     response = requests.get(geo_url)
     
     if response.status_code == 200 and response.json():
         data = response.json()[0]
+        # print(data["local_names"]["sr"])
         return data["lat"], data["lon"]
     else:
-        return None, None  # Return None if city is not found
-
+        return None, None  
+    
 def get_weather(city_name):
-    """Fetch real-time weather data from OpenWeatherMap API using city name."""
     latitude, longitude = get_coordinates(city_name)
     
     if latitude is None or longitude is None:
@@ -71,9 +70,10 @@ tools = [{
 
 # Step 3: Get user input for city name
 city = input("Enter a city name: ")
+question = input(f"Ask anything about {city}: ")
 
 # Step 4: Send user request to OpenAI
-messages = [{"role": "user", "content": f"What's the weather like in {city} today?"}]
+messages = [{"role": "user", "content": f"What's the weather like in {city} today? {question}"}]
 
 completion = client.chat.completions.create(
     model="gpt-4o",
